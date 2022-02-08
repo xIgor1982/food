@@ -496,7 +496,8 @@ a {
 
 .menu__item-descr {
     margin-top: 20px;
-    padding: 0 20px
+    padding: 0 20px;
+    min-height: 130px;
 }
 
 .menu__item-divider {

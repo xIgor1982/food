@@ -151,14 +151,15 @@ window.addEventListener('DOMContentLoaded', () => {
     // ***** Card *****
 
     class MenuCard {
-        constructor(src, alt, title, descr, price, parentSelector, transfer = 30) {
+        constructor(src, alt, title, descr, price, parentSelector, ...classes) {
             this.src = src;
             this.alt = alt;
             this.title = title;
             this.descr = descr;
             this.price = price;
+            this.classes = classes;
             this.parent = document.querySelector(parentSelector);
-            this.transfer = transfer;
+            this.transfer = 30;
             this.changeToRub();
         }
 
@@ -168,7 +169,14 @@ window.addEventListener('DOMContentLoaded', () => {
 
         render() {
             const element = document.createElement('div');
-            element.classList.add('menu__item');
+
+            if (this.classes.length === 0) {
+                this.classes = 'menu__item';
+                element.classList.add(this.classes);
+            } else {
+                this.classes.forEach(className => element.classList.add(className));
+            }
+
             element.innerHTML = `
                 <img src=${this.src} alt=${this.alt}>
                 <h3 class="menu__item-subtitle">${this.title}</h3>
@@ -195,8 +203,8 @@ window.addEventListener('DOMContentLoaded', () => {
     new MenuCard(
         "img/tabs/elite.jpg",
         "elite",
-        'Меню “Премиум”',
-        `В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!`,
+        'Меню "Премиум"',
+        `В меню "Премиум" - мы используем <br />не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!`,
         18,
         '.menu .container'
     ).render();
