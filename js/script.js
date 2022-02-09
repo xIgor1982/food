@@ -103,8 +103,7 @@ window.addEventListener('DOMContentLoaded', () => {
     // ***** Modal *****
 
     const modalTrigger = document.querySelectorAll('[data-modal]'),
-        modal = document.querySelector('.modal'),
-        modalCloseBtn = document.querySelector('[data-close]');
+        modal = document.querySelector('.modal');
 
     const openModal = () => {
         modal.classList.add('show');
@@ -123,10 +122,8 @@ window.addEventListener('DOMContentLoaded', () => {
         document.body.style.overflow = '';
     };
 
-    modalCloseBtn.addEventListener('click', closeModal);
-
     modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
+        if (e.target === modal || e.target.getAttribute('data-close') == '') {
             closeModal();
         }
     });
@@ -137,7 +134,7 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // const modalTimerId = setTimeout(openModal, 5000);
+    const modalTimerId = setTimeout(openModal, 50000);
 
     const showModalByScroll = () => {
         if (window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight) {
@@ -217,4 +214,99 @@ window.addEventListener('DOMContentLoaded', () => {
         14,
         '.menu .container'
     ).render();
+
+    // Forms - работа с сервером
+    const forms = document.querySelectorAll('form');
+
+    const message = {
+        loading: 'img/form/spinner.svg',
+        success: 'Спасибо! Скоро мы с Вами свяжемся',
+        failure: 'Что-то пошло не так...'
+    };
+
+    const postData = (form) => {
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const statusMessage = document.createElement('img');
+            statusMessage.src = message.loading;
+            statusMessage.style.cssText = `
+                display: block;
+                margin: 0 auto;
+            `;
+            // form.append(statusMessage);
+            form.insertAdjacentElement('afterend', statusMessage);
+
+            const request = new XMLHttpRequest();
+            request.open('POST', 'server.php');
+
+            //Передача данных в формате FormData -->
+
+            // request.setRequestHeader('Content-type', 'multipart/form-data'); 
+            // эта строка при использовании с XMLHttpRequest 
+            // вызывает ошибку передачи данных, т.к. сервер ее сам добавляет!
+
+            // const formData = new FormData(form);
+            // request.send(formData);
+            
+            //<-- FormData
+
+            //Передача данных в формате JSON -->
+            request.setRequestHeader('Content-type', 'application/json');
+            const formData = new FormData(form);
+
+            //Перевод данных из FormData в JSON
+            const object = {};
+            formData.forEach(function (value, key) {
+                object[key] = value;
+            });
+            const json = JSON.stringify(object);
+            request.send(json);
+            //<-- JSON
+
+            //Общая часть
+            request.addEventListener('load', () => {
+                if (request.status === 200) {
+                    // console.log('Ответ сервера');
+                    console.log(request.response);
+                    showThanksModal(message.success);
+                    form.reset();
+                    statusMessage.remove();
+                } else {
+                    showThanksModal(message.failure);
+                }
+            });            
+        });
+    };
+
+    forms.forEach(item => {
+        postData(item);
+    });
+
+    //следующая часть - доработка
+
+    function showThanksModal (message) {
+        const prevModalDialog = document.querySelector('.modal__dialog');
+        
+        prevModalDialog.classList.add('hide');
+        openModal();
+
+        const thanksModal = document.createElement('div');
+        thanksModal.classList.add('modal__dialog');
+        thanksModal.innerHTML = `
+            <div class="modal__content">
+                <div data-close class="modal__close">&times;</div>
+                <div class="modal__title">${message}</div>
+            </div>
+        `;
+
+        document.querySelector('.modal').append(thanksModal);
+
+        setTimeout(() => {
+            thanksModal.remove();
+            prevModalDialog.classList.add('show');
+            prevModalDialog.classList.remove('hide');
+            closeModal();
+        }, 4000);
+    }
 });
