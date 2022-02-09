@@ -137,7 +137,7 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // const modalTimerId = setTimeout(openModal, 5000);
+    const modalTimerId = setTimeout(openModal, 5000);
 
     const showModalByScroll = () => {
         if (window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight) {
@@ -217,4 +217,71 @@ window.addEventListener('DOMContentLoaded', () => {
         14,
         '.menu .container'
     ).render();
+
+    // Forms - работа с сервером
+    const forms = document.querySelectorAll('form');
+
+    const message = {
+        loading: 'Загрузка',
+        success: 'Спасибо! Скоро мы с Вами свяжемся',
+        failure: 'Что-то пошло не так...'
+    };
+
+    const postData = (form) => {
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const statusMessage = document.createElement('div');
+            statusMessage.classList.add('status');
+            statusMessage.textContent = message.loading;
+            form.append(statusMessage);
+
+            const request = new XMLHttpRequest();
+            request.open('POST', 'server.php');
+
+            //Передача данных в формате FormData -->
+
+            // request.setRequestHeader('Content-type', 'multipart/form-data'); 
+            // эта строка при использовании с XMLHttpRequest 
+            // вызывает ошибку передачи данных, т.к. сервер ее сам добавляет!
+
+            // const formData = new FormData(form);
+            // request.send(formData);
+            
+            //<-- FormData
+
+            //Передача данных в формате JSON -->
+            request.setRequestHeader('Content-type', 'application/json');
+            const formData = new FormData(form);
+
+            //Перевод данных из FormData в JSON
+            const object = {};
+            formData.forEach(function (value, key) {
+                object[key] = value;
+            });
+            const json = JSON.stringify(object);
+            request.send(json);
+            //<-- JSON
+
+            //Общая часть
+            request.addEventListener('load', () => {
+                if (request.status === 200) {
+                    // console.log('Ответ сервера');
+                    console.log(request.response);
+                    statusMessage.textContent = message.success;
+                    form.reset();
+                    setTimeout(() => {
+                        statusMessage.remove();
+                    }, 2000);
+                } else {
+                    statusMessage.textContent = message.failure;
+                }
+            });            
+        });
+    };
+
+    forms.forEach(item => {
+        postData(item);
+    });
+
 });
