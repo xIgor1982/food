@@ -22,16 +22,5 @@
       "price": 21
     }
   ],
-  "requests": [
-    {
-      "name": "qwerty",
-      "phone": "9876543",
-      "id": 1
-    },
-    {
-      "name": "iohgtyk",
-      "phone": "54683",
-      "id": 2
-    }
-  ]
+  "requests": []
 }
