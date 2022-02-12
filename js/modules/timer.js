@@ -1,7 +1,5 @@
-function timer() {
+function timer(id, deadline) {
     // ***** Timer *****
-
-    const deadline = '2022-02-17';
 
     const getTimerRemaining = (endtime) => {
         const t = Date.parse(endtime) - Date.parse(new Date()),
@@ -18,18 +16,6 @@ function timer() {
             'seconds': seconds
         };
     };
-
-    // const getZero = (num) => {
-    //     return `0${num}`.slice(-2);
-    // };
-
-    // const getZero = (num) => {
-    //     if(num >= 0 && num < 10) {
-    //         return `0${num}`;
-    //     } else {
-    //         return num;
-    //     }
-    // };
 
     const getZero = (num) => (num >= 0 && num < 10) ? `0${num}` : num;
 
@@ -57,7 +43,7 @@ function timer() {
         }
     };
 
-    setClock('.timer', deadline);
+    setClock(id, deadline);
 }
 
-module.exports = timer;
+export default timer;
