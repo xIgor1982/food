@@ -1,1 +1,2 @@
-lesson_code_js_react_02.2022
+Запуск проекта осуществляется через live server vs code
+Главный файл для запуска - index.html
